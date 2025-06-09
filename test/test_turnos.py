@@ -1,74 +1,58 @@
 import unittest
 from datetime import datetime
-from src.models.turno import Turno
 from src.models.paciente import Paciente
 from src.models.medico import Medico
 from src.models.especialidad import Especialidad
+from src.models.turno import Turno
 
 class TestTurno(unittest.TestCase):
-    
     def setUp(self):
-        """Configuración inicial para cada test"""
-        self.paciente = Paciente("Juan Pérez", "12345678", "15/03/1985")
-        self.medico = Medico("Dr. García", "54321")
-        self.fecha_hora = datetime(2025, 6, 16, 10, 30)  
-        self.especialidad = "Cardiología"
-        
-
-        cardiologia = Especialidad("Cardiología", ["lunes", "miércoles", "viernes"])
-        self.medico.agregar_especialidad(cardiologia)
-        
-        self.turno = Turno(self.paciente, self.medico, self.fecha_hora, self.especialidad)
+        self.paciente = Paciente("Sofia Martinez", "87654321", "12/05/1988")
+        self.medico = Medico("Dr. Nicolas Vega", "MAT22222")
+        self.dermatologia = Especialidad("Dermatologia", ["lunes", "miercoles", "viernes"])
+        self.medico.agregar_especialidad(self.dermatologia)
+        self.fecha_hora = datetime(2025, 6, 18, 10, 15)
     
-    def test_crear_turno_exitoso(self):
-        """Test de creación exitosa de turno"""
-        self.assertEqual(self.turno.obtener_medico(), self.medico)
-        self.assertEqual(self.turno.obtener_fecha_hora(), self.fecha_hora)
+    def test_crear_turno(self):
+        turno = Turno(self.paciente, self.medico, self.fecha_hora, "Dermatologia")
+        self.assertEqual(turno.obtener_medico(), self.medico)
+        self.assertEqual(turno.obtener_fecha_hora(), self.fecha_hora)
+        self.assertIn("Sofia Martinez", str(turno))
+        self.assertIn("Dr. Nicolas Vega", str(turno))
+        self.assertIn("Dermatologia", str(turno))
     
-    def test_obtener_medico(self):
-        """Test de obtención del médico del turno"""
-        medico_obtenido = self.turno.obtener_medico()
-        self.assertEqual(medico_obtenido.obtener_matricula(), "54321")
+    def test_paciente_none(self):
+        with self.assertRaises(ValueError):
+            Turno(None, self.medico, self.fecha_hora, "Dermatologia")
     
-    def test_obtener_fecha_hora(self):
-        """Test de obtención de fecha y hora del turno"""
-        fecha_obtenida = self.turno.obtener_fecha_hora()
-        self.assertEqual(fecha_obtenida, self.fecha_hora)
+    def test_medico_none(self):
+        with self.assertRaises(ValueError):
+            Turno(self.paciente, None, self.fecha_hora, "Dermatologia")
     
-    def test_representacion_string(self):
-        """Test de representación en string del turno"""
-        resultado = str(self.turno)
-        self.assertIn("Juan Pérez", resultado)
-        self.assertIn("Dr. García", resultado)
-        self.assertIn("Cardiología", resultado)
-
-        self.assertTrue(len(resultado) > 0)
+    def test_fecha_none(self):
+        with self.assertRaises(ValueError):
+            Turno(self.paciente, self.medico, None, "Dermatologia")
     
-    def test_turno_diferente_especialidad(self):
-        """Test con turno de diferente especialidad"""
-
-        medico_pediatra = Medico("Dra. López", "99999")
-        pediatria = Especialidad("Pediatría", ["martes", "jueves"])
-        medico_pediatra.agregar_especialidad(pediatria)
-        
-        fecha_martes = datetime(2025, 6, 17, 14, 0)  
-        turno_pediatria = Turno(self.paciente, medico_pediatra, fecha_martes, "Pediatría")
-        
-        self.assertEqual(turno_pediatria.obtener_medico(), medico_pediatra)
-        self.assertEqual(turno_pediatria.obtener_fecha_hora(), fecha_martes)
+    def test_especialidad_vacia(self):
+        with self.assertRaises(ValueError):
+            Turno(self.paciente, self.medico, self.fecha_hora, "")
     
-    def test_turno_mismo_paciente_diferente_medico(self):
-        """Test con mismo paciente pero diferente médico"""
-        otro_medico = Medico("Dr. Martínez", "77777")
-        neurologia = Especialidad("Neurología", ["sábado"])
-        otro_medico.agregar_especialidad(neurologia)
-        
-        fecha_sabado = datetime(2025, 6, 21, 9, 0)  
-        otro_turno = Turno(self.paciente, otro_medico, fecha_sabado, "Neurología")
-        
-        
-        self.assertEqual(self.turno.obtener_medico().obtener_matricula(), "54321")
-        self.assertEqual(otro_turno.obtener_medico().obtener_matricula(), "77777")
+    def test_str_completo(self):
+        turno = Turno(self.paciente, self.medico, self.fecha_hora, "Dermatologia")
+        resultado = str(turno)
+        self.assertIn("Sofia Martinez", resultado)
+        self.assertIn("Dr. Nicolas Vega", resultado)
+        self.assertIn("Dermatologia", resultado)
+        self.assertIn("2025", resultado)
+    
+    def test_fecha_pasada(self):
+        fecha_pasada = datetime(2020, 1, 1, 9, 0)
+        with self.assertRaises(ValueError):
+            Turno(self.paciente, self.medico, fecha_pasada, "Dermatologia")
+    
+    def test_especialidad_none(self):
+        with self.assertRaises(ValueError):
+            Turno(self.paciente, self.medico, self.fecha_hora, None)
 
 if __name__ == "__main__":
     unittest.main()

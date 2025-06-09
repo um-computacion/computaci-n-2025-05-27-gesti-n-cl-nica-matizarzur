@@ -2,36 +2,52 @@ import unittest
 from src.models.paciente import Paciente
 
 class TestPaciente(unittest.TestCase):
+    def test_crear_paciente(self):
+        paciente = Paciente("Maria Elena Rodriguez", "45678912", "25/03/1985")
+        self.assertEqual(paciente.obtener_dni(), "45678912")
+        self.assertIn("Maria Elena Rodriguez", str(paciente))
+        self.assertIn("45678912", str(paciente))
+        self.assertIn("25/03/1985", str(paciente))
     
-    def test_crear_paciente_exitoso(self):
-        """Test de creación exitosa de paciente"""
-        paciente = Paciente("Matias Zarzur", "12345678", "17/07/1977")
-        self.assertEqual(paciente.obtener_dni(), "12345678")
-        self.assertIn("Matias Zarzur", str(paciente))
-        self.assertIn("12345678", str(paciente))
-        self.assertIn("17/07/1977", str(paciente))
+    def test_nombre_vacio(self):
+        with self.assertRaises(ValueError):
+            Paciente("", "45678912", "25/03/1985")
     
-    def test_obtener_dni(self):
-        """Test de obtención del DNI"""
-        paciente = Paciente("Juan Pérez", "87654321", "15/03/1985")
-        self.assertEqual(paciente.obtener_dni(), "87654321")
+    def test_dni_vacio(self):
+        with self.assertRaises(ValueError):
+            Paciente("Maria Elena Rodriguez", "", "25/03/1985")
     
-    def test_representacion_string(self):
-        """Test de representación en string del paciente"""
-        paciente = Paciente("Ana García", "11223344", "20/12/1990")
+    def test_fecha_vacia(self):
+        with self.assertRaises(ValueError):
+            Paciente("Maria Elena Rodriguez", "45678912", "")
+    
+    def test_dni_mal(self):
+        with self.assertRaises(ValueError):
+            Paciente("Maria Elena Rodriguez", "XYZ78912", "25/03/1985")
+    
+    def test_fecha_mala(self):
+        with self.assertRaises(ValueError):
+            Paciente("Maria Elena Rodriguez", "45678912", "1985/03/25")
+    
+    def test_fecha_inexistente(self):
+        with self.assertRaises(ValueError):
+            Paciente("Maria Elena Rodriguez", "45678912", "30/02/1985")
+    
+    def test_str(self):
+        paciente = Paciente("Carlos Alberto Fernandez", "23456789", "12/11/1990")
         resultado = str(paciente)
-        self.assertIn("Ana García", resultado)
-        self.assertIn("11223344", resultado)
-        self.assertIn("20/12/1990", resultado)
+        self.assertIn("Carlos Alberto Fernandez", resultado)
+        self.assertIn("23456789", resultado)
+        self.assertIn("12/11/1990", resultado)
     
-    def test_diferentes_pacientes(self):
-        """Test con diferentes datos de pacientes"""
-        paciente1 = Paciente("Carlos López", "99887766", "05/08/1980")
-        paciente2 = Paciente("María Rodríguez", "55443322", "12/11/1995")
-        
-        self.assertEqual(paciente1.obtener_dni(), "99887766")
-        self.assertEqual(paciente2.obtener_dni(), "55443322")
-        self.assertNotEqual(str(paciente1), str(paciente2))
+    def test_dni_espacios(self):
+        with self.assertRaises(ValueError):
+            Paciente("Ana Maria Lopez", "456 789 12", "15/08/1992")
+    
+    def test_fecha_formato_malo(self):
+        with self.assertRaises(ValueError):
+            Paciente("Luis Miguel Torres", "34567891", "15-08-1992")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,122 +1,85 @@
 import unittest
 from datetime import datetime
-from src.models.historiaclinica import HistoriaClinica
 from src.models.paciente import Paciente
 from src.models.medico import Medico
+from src.models.especialidad import Especialidad
 from src.models.turno import Turno
 from src.models.receta import Receta
-from src.models.especialidad import Especialidad
+from src.models.historiaclinica import HistoriaClinica
 
 class TestHistoriaClinica(unittest.TestCase):
-    
     def setUp(self):
-        """Configuración inicial para cada test"""
-        self.paciente = Paciente("Ana Martínez", "55667788", "25/12/1988")
+        self.paciente = Paciente("Diego Sanchez", "55667788", "22/03/1987")
+        self.medico = Medico("Dr. Valeria Torres", "MAT77777")
+        self.traumatologia = Especialidad("Traumatologia", ["martes", "jueves"])
+        self.medico.agregar_especialidad(self.traumatologia)
+        
+        self.fecha_hora = datetime(2025, 6, 19, 15, 30)
+        self.turno = Turno(self.paciente, self.medico, self.fecha_hora, "Traumatologia")
+        self.receta = Receta(self.paciente, self.medico, ["Diclofenac 50mg"])
+        
         self.historia = HistoriaClinica(self.paciente)
-        
-
-        self.medico = Medico("Dr. López", "98765")
-        cardiologia = Especialidad("Cardiología", ["lunes", "miércoles", "viernes"])
-        self.medico.agregar_especialidad(cardiologia)
-        
-
-        self.fecha_turno = datetime(2025, 6, 18, 15, 30)  # Miércoles 18 de junio, 15:30
-        self.turno = Turno(self.paciente, self.medico, self.fecha_turno, "Cardiología")
-        self.medicamentos = ["Enalapril 10mg", "Atenolol 50mg"]
-        self.receta = Receta(self.paciente, self.medico, self.medicamentos)
     
-    def test_crear_historia_clinica_exitosa(self):
-        """Test de creación exitosa de historia clínica"""
-
-        turnos = self.historia.obtener_turnos()
-        recetas = self.historia.obtener_recetas()
-        self.assertEqual(len(turnos), 0)
-        self.assertEqual(len(recetas), 0)
+    def test_crear_historia_clinica(self):
+        self.assertEqual(len(self.historia.obtener_turnos()), 0)
+        self.assertEqual(len(self.historia.obtener_recetas()), 0)
+        self.assertIn("Diego Sanchez", str(self.historia))
     
     def test_agregar_turno(self):
-        """Test de agregar turno a la historia clínica"""
         self.historia.agregar_turno(self.turno)
+        
         turnos = self.historia.obtener_turnos()
         self.assertEqual(len(turnos), 1)
         self.assertEqual(turnos[0], self.turno)
     
     def test_agregar_receta(self):
-        """Test de agregar receta a la historia clínica"""
         self.historia.agregar_receta(self.receta)
+        
         recetas = self.historia.obtener_recetas()
         self.assertEqual(len(recetas), 1)
         self.assertEqual(recetas[0], self.receta)
     
-    def test_obtener_turnos_copia(self):
-        """Test que obtener_turnos devuelve una copia de la lista"""
+    def test_obtener_copias_no_referencias(self):
         self.historia.agregar_turno(self.turno)
-        turnos1 = self.historia.obtener_turnos()
-        turnos2 = self.historia.obtener_turnos()
         
-
-        self.assertIsNot(turnos1, turnos2)
-
-        self.assertEqual(turnos1, turnos2)
+        turnos_obtenidos = self.historia.obtener_turnos()
+        turnos_obtenidos.clear()
+        
+        self.assertEqual(len(self.historia.obtener_turnos()), 1)
     
-    def test_obtener_recetas_copia(self):
-        """Test que obtener_recetas devuelve una copia de la lista"""
-        self.historia.agregar_receta(self.receta)
-        recetas1 = self.historia.obtener_recetas()
-        recetas2 = self.historia.obtener_recetas()
-        
-
-        self.assertIsNot(recetas1, recetas2)
-
-        self.assertEqual(recetas1, recetas2)
+    def test_agregar_turno_none(self):
+        with self.assertRaises(ValueError):
+            self.historia.agregar_turno(None)
     
-    def test_agregar_multiples_turnos(self):
-        """Test de agregar múltiples turnos"""
-        # Crear segundo médico y turno
-        medico2 = Medico("Dra. García", "11111")
-        pediatria = Especialidad("Pediatría", ["martes", "jueves"])
-        medico2.agregar_especialidad(pediatria)
-        
-        fecha_turno2 = datetime(2025, 6, 19, 10, 0)  # Jueves 19 de junio, 10:00
-        turno2 = Turno(self.paciente, medico2, fecha_turno2, "Pediatría")
-        
-        self.historia.agregar_turno(self.turno)
-        self.historia.agregar_turno(turno2)
-        
-        turnos = self.historia.obtener_turnos()
-        self.assertEqual(len(turnos), 2)
-        self.assertIn(self.turno, turnos)
-        self.assertIn(turno2, turnos)
+    def test_agregar_receta_none(self):
+        with self.assertRaises(ValueError):
+            self.historia.agregar_receta(None)
     
-    def test_agregar_multiples_recetas(self):
-        """Test de agregar múltiples recetas"""
-
-        medicamentos2 = ["Ibuprofeno 400mg"]
-        receta2 = Receta(self.paciente, self.medico, medicamentos2)
-        
-        self.historia.agregar_receta(self.receta)
-        self.historia.agregar_receta(receta2)
-        
-        recetas = self.historia.obtener_recetas()
-        self.assertEqual(len(recetas), 2)
-        self.assertIn(self.receta, recetas)
-        self.assertIn(receta2, recetas)
-    
-    def test_representacion_string(self):
-        """Test de representación en string de la historia clínica"""
+    def test_str_representation_completa(self):
         self.historia.agregar_turno(self.turno)
         self.historia.agregar_receta(self.receta)
-        
         resultado = str(self.historia)
-        self.assertIn("Ana Martínez", resultado)
-
-        self.assertTrue(len(resultado) > 0)
+        
+        self.assertIn("Diego Sanchez", resultado)
+        self.assertIn("Turnos", resultado)
+        self.assertIn("Recetas", resultado)
+        self.assertIn("Dr. Valeria Torres", resultado)
     
-    def test_historia_clinica_vacia(self):
-        """Test de historia clínica sin turnos ni recetas"""
-        resultado = str(self.historia)
-        self.assertIn("Ana Martínez", resultado)
-
-        self.assertTrue(len(resultado) > 0)
+    def test_paciente_none(self):
+        with self.assertRaises(ValueError):
+            HistoriaClinica(None)
+    
+    def test_multiples_turnos_recetas(self):
+        segundo_turno = Turno(self.paciente, self.medico, datetime(2025, 7, 1, 9, 0), "Traumatologia")
+        segunda_receta = Receta(self.paciente, self.medico, ["Ibuprofeno 600mg"])
+        
+        self.historia.agregar_turno(self.turno)
+        self.historia.agregar_turno(segundo_turno)
+        self.historia.agregar_receta(self.receta)
+        self.historia.agregar_receta(segunda_receta)
+        
+        self.assertEqual(len(self.historia.obtener_turnos()), 2)
+        self.assertEqual(len(self.historia.obtener_recetas()), 2)
 
 if __name__ == "__main__":
     unittest.main()
