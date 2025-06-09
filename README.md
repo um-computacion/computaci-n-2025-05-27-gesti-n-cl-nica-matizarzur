@@ -18,8 +18,11 @@ python -m unittest discover tests -v
 # Componentes del Sistema
 
 **Modelos** (src/models/): Contiene las clases y las validaciones del proyecto
+
 **Interfaz por consola** (src/cli.py): Maneja la interaccion con el usuario y presenta el menu del sistema
+
 **Excepciones** (src/models/exceptions.py): Manejo de excepciones 
+
 **Pruebas** (test/): tests, siguiendo el modelo de trabajo TDD
 
 # Funcionalidades
