@@ -7,6 +7,27 @@
 - **Nombre y Apellido**: Matías Zarzur
 - **Ciclo Lectivo**: 2025
 - **Carrera**: Ingeniería en Informática
+# Como ejecutar el sistema y pruebas:
+```bash
+#sistema
+python main.py
+#ejecutar todas las pruebas
+python -m unittest discover tests -v
+```
+
+# Componentes del Sistema
+
+**Modelos** (src/models/): Contiene las clases y las validaciones del proyecto
+**Interfaz por consola** (src/cli.py): Maneja la interaccion con el usuario y presenta el menu del sistema
+**Excepciones** (src/models/exceptions.py): Manejo de excepciones 
+**Pruebas** (test/): tests, siguiendo el modelo de trabajo TDD
+
+# Funcionalidades
+- Gestion de pacientes 
+- Gestion de medicos y especialidades de los mismos
+- Gestion de agenda de turnos médicos
+- Historias clinicas
+- Visualizacion completa de los agentes de la clinica (pacientes, medicos, hsitorias clinicas, turnos)
 
 ## ⏰ Información Importante sobre la Entrega
 
