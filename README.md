@@ -1,11 +1,36 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/y_fEcNZn)
 # 🏥 Sistema de Gestión para una Clínica
 
 ## 👤 Información del Alumno
 
 ### 📋 Datos Personales
-- **Nombre y Apellido**: [Completar con nombre y apellido]
+- **Nombre y Apellido**: Matías Zarzur
 - **Ciclo Lectivo**: 2025
-- **Carrera**: [Completar con nombre de la carrera]
+- **Carrera**: Ingeniería en Informática
+# Como ejecutar el sistema y pruebas:
+```bash
+#sistema
+python main.py
+#ejecutar todas las pruebas
+python -m unittest discover tests -v
+```
+
+# Componentes del Sistema
+
+**Modelos** (src/models/): Contiene las clases y las validaciones del proyecto
+
+**Interfaz por consola** (src/cli.py): Maneja la interaccion con el usuario y presenta el menu del sistema
+
+**Excepciones** (src/models/exceptions.py): Manejo de excepciones 
+
+**Pruebas** (test/): tests, siguiendo el modelo de trabajo TDD
+
+# Funcionalidades
+- Gestion de pacientes 
+- Gestion de medicos y especialidades de los mismos
+- Gestion de agenda de turnos médicos
+- Historias clinicas
+- Visualizacion completa de los agentes de la clinica (pacientes, medicos, hsitorias clinicas, turnos)
 
 ## ⏰ Información Importante sobre la Entrega
 
